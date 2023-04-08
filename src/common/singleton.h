@@ -1,7 +1,8 @@
 // @author: gezhipeng @ 20230408
 // @file: singleton.h
 // @brief: singleton
-#ifndef SRC_SINGLETON_H_
+#ifndef SRC_COMMON_SINGLETON_H_
+#define SRC_COMMON_SINGLETON_H_
 namespace gcode {
 template <typename T> class Singleton {
 public:
@@ -17,4 +18,4 @@ private:
   Singleton &operator=(const Singleton &) = delete;
 }; // class Singleton
 } // namespace gcode
-#endif SRC_SINGLETON_H_ // SRC_SINGLETON_H_
+#endif // SRC_COMMON_SINGLETON_H_

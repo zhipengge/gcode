@@ -1,9 +1,10 @@
 // @author: gezhipeng @ 20230408
-// @file: glog.cc
-// @brief: glog
+// @file: log.cc
+// @brief: log
 #include "glog.h"
 #include <ctime>
 namespace gcode {
+namespace common {
 Logger::Logger(const LogLevel &level, const char *file, const char *func,
                const int &line) {
   level_ = level;
@@ -14,11 +15,14 @@ Logger::~Logger() {
 }
 void Logger::AddPrefix(const char *file, const char *func, const int &line) {
   time_t now = time(nullptr);
-  struct tm *local_time = localtime(&now);
+  tm tm{};
+  std::lock_guard<std::mutex> lock(mtx);
+  localtime_r(&now, &tm);
   char time_str[64];
-  strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", local_time);
-  buffer_ << kLogLevelColorMap.at(level_) << time_str << " "
-          << kLogLevelStringMap.at(level_) << " " << file << ":" << func << ":"
-          << line << ":";
+  strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", &tm);
+  buffer_ << kLogLevelColorMap.at(level_) << time_str << " ["
+          << kLogLevelStringMap.at(level_) << "] " << file << " " << func << " "
+          << line << ": ";
 }
+} // namespace common
 } // namespace gcode

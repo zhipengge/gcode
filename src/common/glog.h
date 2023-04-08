@@ -1,14 +1,16 @@
 // @author: gezhipeng @ 20230408
 // @file: glog.h
 // @brief: glog
-#ifndef SRC_GLOG_H_
-#define SRC_GLOG_H_
+#ifndef SRC_COMMON_GLOG_H_
+#define SRC_COMMON_GLOG_H_
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 namespace gcode {
+namespace common {
 enum class LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -49,6 +51,7 @@ private:
   void AddPrefix(const char *file, const char *func, const int &line);
   LogLevel level_;
   std::ostringstream buffer_;
+  std::mutex mtx;
 }; // class Logger
 class LoggerDummy {
 public:
@@ -61,20 +64,25 @@ public:
     return *this;
   }
 }; // class LoggerDummy
+} // namespace common
+}; // namespace gcode
 #ifdef GLOG
 #define LOG_DEBUG                                                              \
-  gcode::Logger(gcode::LogLevel::DEBUG, __FILE__, __FUNCTION__, __LINE__)
+  gcode::common::Logger(gcode::common::LogLevel::DEBUG, __FILE__,              \
+                        __FUNCTION__, __LINE__)
 #define LOG_INFO                                                               \
-  gcode::Logger(gcode::LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
+  gcode::common::Logger(gcode::common::LogLevel::INFO, __FILE__, __FUNCTION__, \
+                        __LINE__)
 #define LOG_WARNING                                                            \
-  gcode::Logger(gcode::LogLevel::WARNING, __FILE__, __FUNCTION__, __LINE__)
+  gcode::common::Logger(gcode::common::LogLevel::WARNING, __FILE__,            \
+                        __FUNCTION__, __LINE__)
 #define LOG_ERROR                                                              \
-  gcode::Logger(gcode::LogLevel::ERROR, __FILE__, __FUNCTION__, __LINE__)
+  gcode::common::Logger(gcode::common::LogLevel::ERROR, __FILE__,              \
+                        __FUNCTION__, __LINE__)
 #else
-#define LOG_DEBUG gcode::LoggerDummy()
-#define LOG_INFO gcode::LoggerDummy()
-#define LOG_WARNING gcode::LoggerDummy()
-#define LOG_ERROR gcode::LoggerDummy()
+#define LOG_DEBUG gcode::common::LoggerDummy()
+#define LOG_INFO gcode::common::LoggerDummy()
+#define LOG_WARNING gcode::common::LoggerDummy()
+#define LOG_ERROR gcode::common::LoggerDummy()
 #endif
-};     // namespace gcode
-#endif // SRC_GLOG_H_
+#endif // SRC_COMMON_GLOG_H_
