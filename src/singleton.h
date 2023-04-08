@@ -17,4 +17,4 @@ private:
   Singleton &operator=(const Singleton &) = delete;
 }; // class Singleton
 } // namespace gcode
-#endif SRC_SINGLETON_H_ // SRC_SINGLETON_H_
+#endif // SRC_SINGLETON_H_

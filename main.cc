@@ -8,11 +8,4 @@
 
 using namespace std;
 
-int main() {
-  LOG_DEBUG << "hello world";
-  LOG_INFO << "hello world";
-  LOG_WARNING << "hello world";
-  LOG_ERROR << "hello world"
-            << " programmer";
-  return 0;
-}
+int main() { return 0; }

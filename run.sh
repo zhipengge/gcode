@@ -5,4 +5,10 @@ mkdir build/
 cd build/
 cmake ..
 make -j4
-./gcode
+# unit test
+for test in $(find tests -name "*_test"); do
+    echo "================================="
+    echo "Running $test"
+    $test
+done
+./main

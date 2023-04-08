@@ -17,8 +17,8 @@ void Logger::AddPrefix(const char *file, const char *func, const int &line) {
   struct tm *local_time = localtime(&now);
   char time_str[64];
   strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", local_time);
-  buffer_ << kLogLevelColorMap.at(level_) << time_str << " "
-          << kLogLevelStringMap.at(level_) << " " << file << ":" << func << ":"
-          << line << ":";
+  buffer_ << kLogLevelColorMap.at(level_) << time_str << " ["
+          << kLogLevelStringMap.at(level_) << "] " << file << " " << func << " "
+          << line << ": ";
 }
 } // namespace gcode
