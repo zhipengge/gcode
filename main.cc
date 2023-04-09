@@ -2,8 +2,8 @@
 // @file: main.cc
 // @brief: main
 
+#include "log.h"
 #include "singleton.h"
-#include "src/glog.h"
 #include <iostream>
 
 using namespace std;

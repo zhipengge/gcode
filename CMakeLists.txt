@@ -4,6 +4,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cv
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/nn
 )
 
 
@@ -11,8 +15,12 @@ include_directories(
 # gtest
 add_subdirectory(dependencies/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# stb
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb)
 
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRC_FILES)
+# recursive source files
+file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
+
 
 add_definitions(-DGLOG)
 

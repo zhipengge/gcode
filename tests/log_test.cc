@@ -1,8 +1,8 @@
 // @author: gezhipeng @ 20230408
-// @file: glog_test.cc
-// @brief: glog_test
+// @file: log_test.cc
+// @brief: log_test
 
-#include "glog.h"
+#include "log.h"
 #include <gtest/gtest.h>
 
 TEST(Glog, Single) {
