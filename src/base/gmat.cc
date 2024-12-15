@@ -2,7 +2,6 @@
 // @file: gmat.cc
 // @brief: gmat
 #include "gmat.h"
-#include "allocator.h"
 #include "macro.h"
 #include <cstring>
 namespace gcode {
@@ -160,7 +159,7 @@ Mat::~Mat() { release(); }
 
 void Mat::create() {
   size_t total_size = total() * elemsize;
-  data = FastMalloc(total_size + sizeof(*refcount));
+  data = malloc(total_size + sizeof(*refcount));
   if (data) {
     refcount = (size_t *)(((char *)data) + total_size);
     *refcount = 1ul;
@@ -175,7 +174,7 @@ void Mat::addref() {
 
 void Mat::release() {
   if (refcount && *refcount == 1) {
-    FastFree(data);
+    free(data);
   }
   data = nullptr;
   elemsize = 0;
@@ -298,7 +297,7 @@ void Mat::to_image(unsigned char *_data, size_t *_w, size_t *_h,
       for (size_t col = 0ul; col < *_w; ++col) {
         for (size_t ch = 0ul; ch < *_ch; ++ch) {
           size_t dst_index = r * (*_w) * (*_ch) + col * (*_ch) + ch;
-          size_t src_index = ch * w * h + r * w + col;
+          size_t src_index = ch * wstride * hstride + r * wstride + col;
           _data[dst_index] = ((unsigned char *)data)[src_index];
         }
       }

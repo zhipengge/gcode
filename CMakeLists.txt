@@ -17,6 +17,8 @@ add_subdirectory(dependencies/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 # stb
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb)
+# eigen
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/eigen)
 
 # recursive source files
 file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
@@ -63,7 +65,7 @@ if (ARCHITECTURE STREQUAL "x86")
       message("配置为aarch64编译架构...")
       target_compile_definitions(main PRIVATE __aarch64__)
       # 添加其他特定于x86编译架构的编译选项
-      set(CMAKE_TOOLCHAIN_FILE x86-toolchain.cmake)
+      set(CMAKE_TOOLCHAIN_FILE arm-toolchain.cmake)
 
 else ()
     message(FATAL_ERROR "不支持的编译架构: ${ARCHITECTURE}")

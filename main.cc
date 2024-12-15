@@ -7,6 +7,7 @@
 #include "macro.h"
 #include "singleton.h"
 #include <iostream>
+#include <eigen/Core>
 
 using namespace std;
 using namespace gcode;
