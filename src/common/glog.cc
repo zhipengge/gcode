@@ -4,7 +4,6 @@
 #include "glog.h"
 #include <ctime>
 namespace gcode {
-namespace common {
 Logger::Logger(const LogLevel &level, const char *file, const char *func,
                const int &line) {
   level_ = level;
@@ -23,6 +22,5 @@ void Logger::AddPrefix(const char *file, const char *func, const int &line) {
   buffer_ << kLogLevelColorMap.at(level_) << time_str << " ["
           << kLogLevelStringMap.at(level_) << "] " << file << " " << func << " "
           << line << ": ";
-}
 } // namespace common
 } // namespace gcode

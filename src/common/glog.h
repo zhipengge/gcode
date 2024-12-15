@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <vector>
 namespace gcode {
-namespace common {
 enum class LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -64,25 +63,20 @@ public:
     return *this;
   }
 }; // class LoggerDummy
-} // namespace common
 }; // namespace gcode
 #ifdef GLOG
 #define LOG_DEBUG                                                              \
-  gcode::common::Logger(gcode::common::LogLevel::DEBUG, __FILE__,              \
-                        __FUNCTION__, __LINE__)
+  gcode::Logger(gcode::LogLevel::DEBUG, __FILE__, __FUNCTION__, __LINE__)
 #define LOG_INFO                                                               \
-  gcode::common::Logger(gcode::common::LogLevel::INFO, __FILE__, __FUNCTION__, \
-                        __LINE__)
+  gcode::Logger(gcode::LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
 #define LOG_WARNING                                                            \
-  gcode::common::Logger(gcode::common::LogLevel::WARNING, __FILE__,            \
-                        __FUNCTION__, __LINE__)
+  gcode::Logger(gcode::LogLevel::WARNING, __FILE__, __FUNCTION__, __LINE__)
 #define LOG_ERROR                                                              \
-  gcode::common::Logger(gcode::common::LogLevel::ERROR, __FILE__,              \
-                        __FUNCTION__, __LINE__)
+  gcode::Logger(gcode::LogLevel::ERROR, __FILE__, __FUNCTION__, __LINE__)
 #else
-#define LOG_DEBUG gcode::common::LoggerDummy()
-#define LOG_INFO gcode::common::LoggerDummy()
-#define LOG_WARNING gcode::common::LoggerDummy()
-#define LOG_ERROR gcode::common::LoggerDummy()
+#define LOG_DEBUG gcode::LoggerDummy()
+#define LOG_INFO gcode::LoggerDummy()
+#define LOG_WARNING gcode::LoggerDummy()
+#define LOG_ERROR gcode::LoggerDummy()
 #endif
 #endif // SRC_COMMON_GLOG_H_

@@ -3,7 +3,5 @@
 // @brief: options
 
 namespace gcode {
-namespace nn {
 struct ModelOptions {};
-} // namespace nn
 } // namespace gcode

@@ -7,9 +7,7 @@
 #define IMREAD_RGB 3
 #define IMREAD_GRAY 1
 namespace gcode {
-namespace cv {
-base::Mat imread(const std::string &filename, const int &mode = IMREAD_RGB);
-void imwrite(const std::string &filename, const base::Mat &m);
-} // namespace cv
+Mat imread(const std::string &filename, const int &mode = IMREAD_RGB);
+void imwrite(const std::string &filename, const Mat &m);
 } // namespace gcode
 #endif // SRC_CV_GIMAGE_H_

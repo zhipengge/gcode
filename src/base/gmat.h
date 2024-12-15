@@ -7,8 +7,6 @@
 #define ALIGN_SIZE(sz, n) ((sz + n - 1) & -n)
 #define ALIGN_STEP 8
 namespace gcode {
-namespace base {
-
 /**
  * class Mat
  * 4D at most:
@@ -107,6 +105,5 @@ inline void *Mat::Row(const size_t &bt, const size_t &ch,
                                   wstride * hstride * ch + wstride * r) *
                                      elemsize);
 }
-} // namespace base
 } // namespace gcode
 #endif // SRC_BASE_GMAT_H_

@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 
 TEST(GTIME, BASE) {
-  gcode::common::Timestamp t1{0ull};
-  gcode::common::Timestamp t2(t1);
+  gcode::Timestamp t1{0ull};
+  gcode::Timestamp t2(t1);
   EXPECT_EQ(t1, t2);
   t2.SetNanoSecond(1ull);
   EXPECT_TRUE(t1 != t2);

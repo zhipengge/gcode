@@ -3,7 +3,7 @@
 // @brief: gmat_test
 #include "gmat.h"
 #include <gtest/gtest.h>
-using Mat = gcode::base::Mat;
+using Mat = gcode::Mat;
 TEST(MAT, BASE_CONSTRUCTOR) {
   // default
   Mat m{};

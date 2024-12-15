@@ -5,7 +5,6 @@
 #include "macro.h"
 #include <cstring>
 namespace gcode {
-namespace base {
 Mat::Mat() { release(); }
 
 // vector
@@ -304,5 +303,4 @@ void Mat::to_image(unsigned char *_data, size_t *_w, size_t *_h,
     }
   }
 }
-} // namespace base
 } // namespace gcode

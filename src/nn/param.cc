@@ -4,7 +4,6 @@
 #include "param.h"
 #include "glog.h"
 namespace gcode {
-namespace nn {
 ParamData::ParamData() {}
 ParamData::~ParamData() { clear(); }
 ParamData::ParamData(const ParamData &p) {
@@ -37,5 +36,4 @@ void ParamData::clear() {
     params_[i].array.release();
   }
 }
-} // namespace nn
 } // namespace gcode

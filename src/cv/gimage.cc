@@ -9,9 +9,8 @@
 #include <iostream>
 
 namespace gcode {
-namespace cv {
-base::Mat imread(const std::string &filename, const int &mode) {
-  base::Mat m;
+Mat imread(const std::string &filename, const int &mode) {
+  Mat m;
   if (!std::filesystem::exists(filename)) {
     LOG_ERROR << filename << " not existed.";
     return m;
@@ -36,7 +35,7 @@ base::Mat imread(const std::string &filename, const int &mode) {
   free(data);
   return m;
 }
-void imwrite(const std::string &filename, const base::Mat &m) {
+void imwrite(const std::string &filename, const Mat &m) {
   // Mat to array
   size_t w = m.w;
   size_t h = m.h;
@@ -46,6 +45,4 @@ void imwrite(const std::string &filename, const base::Mat &m) {
   int ret = stbi_write_jpg(filename.c_str(), w, h, ch, data, 90);
   free(data);
 }
-
-} // namespace cv
 } // namespace gcode

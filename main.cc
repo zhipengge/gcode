@@ -6,8 +6,8 @@
 #include "gtime.h"
 #include "macro.h"
 #include "singleton.h"
-#include <iostream>
 #include <eigen/Core>
+#include <iostream>
 
 using namespace std;
 using namespace gcode;

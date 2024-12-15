@@ -8,8 +8,8 @@
 TEST(GIMAGE, IMREAD_WRITE) {
   std::string filename = "../../images/lena.jpg";
   TIMER_BLOCK_START(imread)
-  gcode::base::Mat m = gcode::cv::imread(filename, IMREAD_RGB);
+  gcode::Mat m = gcode::imread(filename, IMREAD_RGB);
   TIMER_BLOCK_END(imread)
   std::string output = "lena.jpg";
-  gcode::cv::imwrite(output, m);
+  gcode::imwrite(output, m);
 }

@@ -4,6 +4,4 @@
 
 #include "gfile.h"
 
-namespace gcode {
-namespace common {} // namespace common
-} // namespace gcode
+namespace gcode {} // namespace gcode

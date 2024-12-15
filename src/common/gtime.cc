@@ -4,7 +4,6 @@
 #include "gtime.h"
 #include <chrono>
 namespace gcode {
-namespace common {
 Timestamp GetCurrentTimestamp() {
   auto now = std::chrono::system_clock::now().time_since_epoch();
   timestamp_ns_t ns =
@@ -23,5 +22,4 @@ std::string TimestampToStr(const Timestamp &t, const TimeFormat &fmt_mode) {
   std::string ret = buffer + std::string(".") + std::to_string(milli_sec);
   return ret;
 }
-} // namespace common
 } // namespace gcode

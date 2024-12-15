@@ -28,7 +28,6 @@
   }
 
 namespace gcode {
-namespace common {
 typedef uint64_t timestamp_ns_t;
 typedef double timestamp_ms_t;
 typedef double timestamp_sec_t;
@@ -74,6 +73,5 @@ private:
   timestamp_sec_t sec_ = 0.0;
 };
 
-} // namespace common
 } // namespace gcode
 #endif // SRC_COMMON_GTIME_H_

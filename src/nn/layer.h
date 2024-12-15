@@ -7,7 +7,6 @@
 #include "param.h"
 #include <vector>
 namespace gcode {
-namespace nn {
 class Layer {
 public:
   /// @brief constructor
@@ -34,11 +33,9 @@ public:
   /// @param bottoms
   /// @param tops
   /// @return
-  virtual int Forward(const std::vector<base::Mat> &bottoms,
-                      std::vector<base::Mat> *tops,
+  virtual int Forward(const std::vector<Mat> &bottoms, std::vector<Mat> *tops,
                       const ModelOptions &options) const;
 
 private:
 };
-} // namespace nn
 } // namespace gcode

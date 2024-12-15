@@ -6,7 +6,6 @@
 #define MAX_PARAM_NUM 32
 #include "gmat.h"
 namespace gcode {
-namespace nn {
 enum class ParamType {
   NONE = 0,
   INT = 1,
@@ -20,7 +19,7 @@ struct ParamCell {
     int i;
     float f;
   };
-  base::Mat array;
+  Mat array;
   ParamCell &operator=(const ParamCell &c) {
     type = c.type;
     switch (type) {
@@ -58,6 +57,5 @@ private:
   ParamCell params_[MAX_PARAM_NUM];
   ParamCell empty_param_;
 };
-} // namespace nn
 } // namespace gcode
 #endif // SRC_NN_PARAM_H_
