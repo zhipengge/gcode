@@ -6,7 +6,7 @@
 #include "gtime.h"
 #include "macro.h"
 #include "singleton.h"
-#include <eigen/Core>
+#include <Eigen/Core>
 #include <iostream>
 
 using namespace std;
