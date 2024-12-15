@@ -9,16 +9,16 @@
 #include <iostream>
 
 namespace gcode {
-Mat imread(const std::string &filename, const int &mode) {
+Mat ReadImage(const std::string &filename, const int &mode) {
   Mat m;
   if (!std::filesystem::exists(filename)) {
     LOG_ERROR << filename << " not existed.";
     return m;
   }
   int req_comp = 0;
-  if (mode == IMREAD_GRAY) {
+  if (mode == ReadImage_GRAY) {
     req_comp = 1;
-  } else if (mode == IMREAD_RGB) {
+  } else if (mode == ReadImage_RGB) {
     req_comp = 3;
   }
   if (req_comp == 0) {
@@ -31,17 +31,17 @@ Mat imread(const std::string &filename, const int &mode) {
   int channel = 0;
   unsigned char *data =
       stbi_load(filename.c_str(), &width, &height, &channel, req_comp);
-  m.from_image(data, width, height, (size_t)req_comp);
+  m.FromImage(data, width, height, (size_t)req_comp);
   free(data);
   return m;
 }
-void imwrite(const std::string &filename, const Mat &m) {
+void WriteImage(const std::string &filename, const Mat &m) {
   // Mat to array
   size_t w = m.w;
   size_t h = m.h;
   size_t ch = m.c;
   void *data = malloc(w * h * ch * sizeof(unsigned char));
-  m.to_image((unsigned char *)data, &w, &h, &ch);
+  m.ToImage((unsigned char *)data, &w, &h, &ch);
   int ret = stbi_write_jpg(filename.c_str(), w, h, ch, data, 90);
   free(data);
 }

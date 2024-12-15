@@ -5,11 +5,11 @@
 #include "gtime.h"
 #include <gtest/gtest.h>
 
-TEST(GIMAGE, IMREAD_WRITE) {
+TEST(GIMAGE, ReadImage_WRITE) {
   std::string filename = "../../images/lena.jpg";
-  TIMER_BLOCK_START(imread)
-  gcode::Mat m = gcode::imread(filename, IMREAD_RGB);
-  TIMER_BLOCK_END(imread)
+  TIMER_BLOCK_START(ReadImage)
+  gcode::Mat m = gcode::ReadImage(filename, ReadImage_RGB);
+  TIMER_BLOCK_END(ReadImage)
   std::string output = "lena.jpg";
-  gcode::imwrite(output, m);
+  gcode::WriteImage(output, m);
 }

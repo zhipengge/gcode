@@ -55,10 +55,9 @@ public:
   void *Batch(const size_t &bt) const;
   void *Channel(const size_t &bt, const size_t &ch) const;
   void *Row(const size_t &bt, const size_t &ch, const size_t &row) const;
-  void from_image(unsigned char *_data, const size_t &_w, const size_t &_h,
-                  const size_t &_ch);
-  void to_image(unsigned char *_data, size_t *_w, size_t *_h,
-                size_t *_ch) const;
+  void FromImage(unsigned char *_data, const size_t &_w, const size_t &_h,
+                 const size_t &_ch);
+  void ToImage(unsigned char *_data, size_t *_w, size_t *_h, size_t *_ch) const;
 
 public:
   void *data = nullptr;

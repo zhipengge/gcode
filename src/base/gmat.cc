@@ -218,8 +218,8 @@ Mat Mat::clone() const {
   return m;
 }
 
-void Mat::from_image(unsigned char *_data, const size_t &_w, const size_t &_h,
-                     const size_t &_ch) {
+void Mat::FromImage(unsigned char *_data, const size_t &_w, const size_t &_h,
+                    const size_t &_ch) {
   release();
   if (_data && _w > 0 && _h > 0 && _ch > 0 && _ch <= 4ul) {
     w = _w;
@@ -277,8 +277,8 @@ void Mat::from_image(unsigned char *_data, const size_t &_w, const size_t &_h,
   }
 }
 
-void Mat::to_image(unsigned char *_data, size_t *_w, size_t *_h,
-                   size_t *_ch) const {
+void Mat::ToImage(unsigned char *_data, size_t *_w, size_t *_h,
+                  size_t *_ch) const {
   if (nullptr == _data || empty()) {
     return;
   }
