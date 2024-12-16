@@ -23,6 +23,7 @@ TEST(GIMAGE, ReadImage_WRITE) {
   points.push_back({700, 700});
   gcode::DrawPoints(m1, points, gcode::CVColor_GREEN, 5, 1.0f,
                     gcode::PointsDrawType::DASH);
+  gcode::DrawText(m1, "12345", {100, 100}, gcode::CVColor_BLUE, 0.2f, 1.f);
   std::string output = "lena.jpg";
   gcode::WriteImage(output, m1);
 }

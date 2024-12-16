@@ -69,5 +69,18 @@ void DrawPolyline(Mat &m, const std::vector<CVPoint> &points,
                   const CVColor &color, const int &thickness = 1,
                   const float &alpha = 1.0f);
 void Resize(const Mat &src, Mat &dst, const size_t &w, const size_t &h);
+/**
+ * @brief: draw text on image
+ * @param m: image
+ * @param text: text
+ * @param p: point, top-left corner of text
+ * @param color: text color
+ * @param scale: text scale
+ * @param alpha: text alpha
+ * @return: void
+ */
+void DrawText(Mat &m, const std::string &text, const CVPoint &p,
+              const CVColor &color, const float &scale = 1.0f,
+              const float &alpha = 1.0f);
 } // namespace gcode
 #endif // SRC_CV_GIMAGE_H_
