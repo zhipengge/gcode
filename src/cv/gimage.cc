@@ -2,11 +2,10 @@
 // @file: gimage.cc
 // @brief: gimage
 #include "gimage.h"
-#include "font_buffer.h"
+#include "ascii_image.h"
 #include "glog.h"
 #include "stb_image.h"
 #include "stb_image_write.h"
-#include "stb_truetype.h"
 #include <cmath>
 #include <filesystem>
 #include <iostream>
@@ -331,7 +330,7 @@ void Resize(const Mat &src, Mat &dst, const size_t &w, const size_t &h) {
 }
 
 void DrawText(Mat &m, const std::string &text, const CVPoint &p,
-              const CVColor &color, const float &scale, const float &alpha) {
+              const CVColor &color, const int &font_size, const float &alpha) {
   if (text.empty()) {
     return;
   }
@@ -349,55 +348,18 @@ void DrawText(Mat &m, const std::string &text, const CVPoint &p,
     LOG_ERROR << "alpha value " << alpha << " is out of range [0, 1].";
     return;
   }
-  if (scale <= 0.0f) {
-    LOG_ERROR << "scale " << scale << " is invalid.";
-    return;
-  }
-  // init font
-  stbtt_fontinfo font;
-  if (!stbtt_InitFont(&font, simsun_ttc,
-                      stbtt_GetFontOffsetForIndex(simsun_ttc, 0))) {
-    std::cerr << "Failed to initialize font!" << std::endl;
-    return;
-  }
-  // draw text
-  int cursor_x = p.x; // 当前绘制字符的横坐标
-
-  for (const char *chr = text.c_str(); *chr; ++chr) {
-    int width, height, xOffset, yOffset;
-    uint8_t *bitmap = stbtt_GetCodepointBitmap(&font, 0, scale, *chr, &width,
-                                               &height, &xOffset, &yOffset);
-    const uint8_t color_ch[3] = {color.r, color.g, color.b};
-    for (size_t ch = 0; ch < m.c; ++ch) {
-      uint8_t *image = (uint8_t *)m.Channel(0, ch);
-      for (int row = 0; row < height; ++row) {
-        for (int col = 0; col < width; ++col) {
-          int img_x = cursor_x + col + xOffset;
-          int img_y = p.y + row - yOffset;
-
-          if (img_x >= 0 && img_x < m.w && img_y >= 0 && img_y < m.h) {
-            int ind = img_y * m.wstride + img_x;
-            auto &pixel = image[ind];
-            const auto &font_pixel = bitmap[row * width + col];
-            if (font_pixel > 0) {
-              pixel = (uint8_t)(alpha * color_ch[ch] + (1.0f - alpha) * pixel);
-            }
-          }
+  int pix_size = adjust_font_size(font_size) * 8;
+  int start_x = p.x;
+  for (const auto &ch : text) {
+    const unsigned char *font = get_ascii_image(font_size, ch);
+    for (int i = 0; i < pix_size; ++i) {
+      for (int j = 0; j < pix_size; ++j) {
+        if (font[i * pix_size + j] > 0) {
+          DrawPoint(m, CVPoint{start_x + j, p.y + i}, color, 1, alpha);
         }
       }
     }
-
-    // 移动光标到下一个字符
-    int advance, left_bearing;
-    stbtt_GetCodepointHMetrics(&font, *chr, &advance, &left_bearing);
-    cursor_x += int(advance * scale);
-
-    // 字符间距
-    int kern = stbtt_GetCodepointKernAdvance(&font, *chr, *(chr + 1));
-    cursor_x += int(kern * scale);
-
-    // 释放当前位图
-    stbtt_FreeBitmap(bitmap, nullptr);
+    start_x += pix_size;
   }
 }
 } // namespace gcode

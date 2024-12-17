@@ -11,7 +11,7 @@ TEST(GIMAGE, ReadImage_WRITE) {
   gcode::Mat m = gcode::ReadImage(filename, ReadImage_RGB);
   TIMER_BLOCK_END(ReadImage)
   gcode::Mat m1;
-  gcode::Resize(m, m1, 800, 800);
+  gcode::Resize(m, m1, 512, 512);
   gcode::DrawCircle(m1, {400, 400}, 100, gcode::CVColor_RED, 5);
   std::vector<gcode::CVPoint> points;
   points.push_back({100, 100});
@@ -19,11 +19,9 @@ TEST(GIMAGE, ReadImage_WRITE) {
   points.push_back({300, 300});
   points.push_back({400, 400});
   points.push_back({500, 500});
-  points.push_back({600, 600});
-  points.push_back({700, 700});
   gcode::DrawPoints(m1, points, gcode::CVColor_GREEN, 5, 1.0f,
                     gcode::PointsDrawType::DASH);
-  gcode::DrawText(m1, "12345", {100, 100}, gcode::CVColor_BLUE, 0.2f, 1.f);
+  gcode::DrawText(m1, "12345 hello", {100, 100}, gcode::CVColor_BLUE, 2, 1.f);
   std::string output = "lena.jpg";
   gcode::WriteImage(output, m1);
 }

@@ -80,7 +80,7 @@ void Resize(const Mat &src, Mat &dst, const size_t &w, const size_t &h);
  * @return: void
  */
 void DrawText(Mat &m, const std::string &text, const CVPoint &p,
-              const CVColor &color, const float &scale = 1.0f,
+              const CVColor &color, const int &font_size = 1,
               const float &alpha = 1.0f);
 } // namespace gcode
 #endif // SRC_CV_GIMAGE_H_
