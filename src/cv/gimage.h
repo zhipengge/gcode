@@ -5,6 +5,7 @@
 #define SRC_CV_GIMAGE_H_
 #include "gmat.h"
 #include <cmath>
+#include <vector>
 #define ReadImage_RGB 3
 #define ReadImage_GRAY 1
 namespace gcode {
