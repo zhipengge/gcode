@@ -27,9 +27,12 @@ file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURREN
 add_definitions(-DGLOG -DSTB_IMAGE_IMPLEMENTATION -DSTB_IMAGE_WRITE_IMPLEMENTATION)
 
 #################### lib ####################
-add_library(gcode ${SRC_FILES})
+
 # 根据构建类型设置库的类型
+add_library(gcode SHARED ${SRC_FILES})
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # 添加debug信息
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     set_target_properties(gcode PROPERTIES DEBUG_POSTFIX "_d")
     message("编译Debug版本的库...")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -38,8 +41,6 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
     message(FATAL_ERROR "不支持的构建类型: ${CMAKE_BUILD_TYPE}")
 endif()
-
-
 set_target_properties(gcode PROPERTIES OUTPUT_NAME "gcode")
 
 
