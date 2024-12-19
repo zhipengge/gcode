@@ -1,8 +1,14 @@
 #!/bin/bash
 # 默认值
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 architecture="x86"
 build_mode="Release"
 output_dir="build"
+jobs=6
 function main() {
     # 处理命令行选项
     while [[ $# -gt 0 ]]; do
@@ -18,6 +24,10 @@ function main() {
         -o|--output)
         shift
         output_dir="$1"
+        ;;
+        -j|--jobs)
+        shift
+        jobs="$1"
         ;;
         *)
         echo "用法: $0 [-a <编译架构>] [-m <编译模式>] [-o <输出目录>]"
@@ -51,11 +61,19 @@ function main() {
         rm -rf $build_dir
     fi
     mkdir -p "$build_dir"
-
+    # compile config
+    echo -e "${GREEN}======================================="
+    echo -e "${GREEN}编译架构: $architecture"
+    echo -e "${GREEN}编译模式: $build_mode"
+    echo -e "${GREEN}输出目录: $build_dir"
+    echo -e "${GREEN}并行任务: $jobs"
+    echo -e "${GREEN}=======================================${NC}"
+    # sleep 1s
+    sleep 1
     # 使用CMake进行编译
     echo "开始编译..."
     cmake -S . -B "$build_dir" -DARCHITECTURE="$architecture" -DCMAKE_BUILD_TYPE="$build_mode"
-    cmake --build "$build_dir"
+    cmake --build "$build_dir"  -j $jobs
     echo "编译完成。"
     cd $build_dir
     pwd
