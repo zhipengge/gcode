@@ -13,8 +13,8 @@ import cv2
 def generage_image(ch, patch_size):
     img = np.zeros((patch_size, patch_size), dtype=np.uint8)
     # make sure the text is in the center
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = patch_size / 24
+    font = cv2.FONT_HERSHEY_TRIPLEX
+    font_scale = patch_size / 40
     font_thickness = patch_size // 32
     font_thickness = max(1, font_thickness)
     text_size = cv2.getTextSize(ch, font, font_scale, font_thickness)[0]
