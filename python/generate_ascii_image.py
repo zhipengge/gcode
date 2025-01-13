@@ -21,6 +21,9 @@ def generage_image(ch, patch_size):
     text_x = (patch_size - text_size[0]) // 2
     text_y = (patch_size + text_size[1]) // 2
     img = cv2.putText(img, ch, (text_x, text_y), font, font_scale, 255, font_thickness)
+    h, w = img.shape[:2]
+    img = img[0: h, w // 6 : 5 * w // 6]
+    img = cv2.resize(img, (patch_size, patch_size), interpolation=cv2.INTER_NEAREST)
     return img
 
 def generage_images(patch_size, save_dir):
