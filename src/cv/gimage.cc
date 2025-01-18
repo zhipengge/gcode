@@ -234,6 +234,7 @@ void DrawPoints(Mat &m, const std::vector<CVPoint> &points,
           float dy = y1 - y0;
           float length = sqrt(dx * dx + dy * dy);
           float dash_num = length / dash_length;
+          dash_num = std::max(dash_num, 1.f);
           float dash_dx = dx / dash_num;
           float dash_dy = dy / dash_num;
           for (int j = 0; j < dash_num; j += 2) {
@@ -248,7 +249,7 @@ void DrawPoints(Mat &m, const std::vector<CVPoint> &points,
       }
     }
   } else if (type == PointsDrawType::SOLID) {
-    for (size_t i = 0; i < points.size(); i += 2) {
+    for (size_t i = 0; i < points.size(); i += 1) {
       if (i + 1 < points.size()) {
         DrawLine(m, points[i], points[i + 1], color, thickness, alpha);
       }

@@ -1,131 +1,298 @@
-// #include "plot/plot2d.h"
-// #include <algorithm>
-// #include <cmath>
+#include "plot/plot2d.h"
+#include "glog.h"
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+namespace gcode {
+constexpr size_t kPrecision = 0;
+constexpr int kFontSize = 2;
+Plot2D::Plot2D(const size_t &width, const size_t &height,
+               const std::string &title, const PLOT_TYPE &type)
+    : image_(width, height, 3, sizeof(uint8_t)), title_(title),
+      plot_type_(type) {
+  image_.fill<uint8_t>(255);
+}
 
-// namespace gcode {
+void Plot2D::Plot(const vector_t &ys, const CVColor &color,
+                  const PointsDrawType &draw_type, const int &thickness,
+                  const std::string &label) {
+  vector_t xs(ys.size());
+  for (size_t i = 0; i < xs.size(); ++i) {
+    xs[i] = i;
+  }
+  Plot(xs, ys, color, draw_type, thickness, label);
+}
 
-// Plot2D::Plot2D(int width, int height, const std::string& title)
-//     : image_(height, width), title_(title),
-//       x_min_(0), x_max_(1), y_min_(0), y_max_(1) {
-//     image_.Fill(CVColor_WHITE); // 设置背景为白色
-// }
+void Plot2D::Plot(const vector_t &xs, const vector_t &ys, const CVColor &color,
+                  const PointsDrawType &draw_type, const int &thickness,
+                  const std::string &label) {
+  if (xs.size() != ys.size()) {
+    LOG_ERROR << "The size of x and y must be the same: " << xs.size() << " vs "
+              << ys.size();
+    return;
+  }
+  if (xs.size() == 0) {
+    LOG_ERROR << "The size of x and y must be greater than 0";
+    return;
+  }
+  legend_.emplace_back(label, color, draw_type, thickness);
+  history_data_.push_back(points_2d_t(xs.size(), 2));
+  auto &data = history_data_.back();
+  data.col(0).array() = xs;
+  data.col(1).array() = ys;
+}
 
-// void Plot2D::Plot(const std::vector<double>& x, const std::vector<double>& y,
-//                   const CVColor& color, const std::string& label) {
-//     if (x.empty() || y.empty() || x.size() != y.size()) return;
+void Plot2D::SetTitle(const std::string &title) { title_ = title; }
 
-//     AutoScale(x, y);
-//     if (!label.empty()) {
-//         legend_.emplace_back(label, color);
-//     }
+void Plot2D::SetXLabel(const std::string &label) { x_label_ = label; }
 
-//     // 转换坐标
-//     auto toPixelX = [this](double x) {
-//         return static_cast<int>((x - x_min_) / (x_max_ - x_min_) *
-//                               (image_.cols - 2 * margin_) + margin_);
-//     };
+void Plot2D::SetYLabel(const std::string &label) { y_label_ = label; }
 
-//     auto toPixelY = [this](double y) {
-//         return static_cast<int>((y_max_ - y) / (y_max_ - y_min_) *
-//                               (image_.rows - 2 * margin_) + margin_);
-//     };
+void Plot2D::Save(const std::string &filename) {
+  GenTransform();
+  if (not transform_valid_) {
+    LOG_ERROR << "Failed to generate transform";
+    return;
+  }
+  DrawHistory();
+  DrawAxes();
+  DrawLegend();
+  DrawLabelAndTitle();
+  WriteImage(filename, image_);
+}
 
-//     // 绘制折线
-//     for (size_t i = 1; i < x.size(); ++i) {
-//         int x1 = toPixelX(x[i-1]);
-//         int y1 = toPixelY(y[i-1]);
-//         int x2 = toPixelX(x[i]);
-//         int y2 = toPixelY(y[i]);
-//         DrawLine(image_, {x1, y1}, {x2, y2}, color);
-//     }
+void Plot2D::GenTransform() {
+  transform_valid_ = false;
+  if (history_data_.empty()) {
+    return;
+  }
+  // 计算坐标轴的范围
+  x_min_ = std::numeric_limits<geometry_precition_t>::max();
+  x_max_ = std::numeric_limits<geometry_precition_t>::lowest();
+  y_min_ = std::numeric_limits<geometry_precition_t>::max();
+  y_max_ = std::numeric_limits<geometry_precition_t>::lowest();
+  for (const auto &data : history_data_) {
+    x_min_ = std::min(x_min_, data.col(0).minCoeff());
+    x_max_ = std::max(x_max_, data.col(0).maxCoeff());
+    y_min_ = std::min(y_min_, data.col(1).minCoeff());
+    y_max_ = std::max(y_max_, data.col(1).maxCoeff());
+  }
+  x_range_ = x_max_ - x_min_;
+  y_range_ = y_max_ - y_min_;
+  if (x_range_ == 0 or y_range_ == 0) {
+    x_range_ = 2.f * std::fabs(x_min_);
+    y_range_ = 2.f * std::fabs(y_min_);
+  }
+  geometry_precition_t x_margin = x_range_ * x_relative_margin_;
+  geometry_precition_t y_margin = y_range_ * y_relative_margin_;
+  x_min_ -= x_margin;
+  x_max_ += x_margin;
+  y_min_ -= y_margin;
+  y_max_ += y_margin;
+  x_range_ = x_max_ - x_min_;
+  y_range_ = y_max_ - y_min_;
+  switch (plot_type_) {
+  case PLOT_TYPE::DATA: {
+    // x -> right, y -> up
+    x_scale_ = image_.w / x_range_;
+    y_scale_ = image_.h / y_range_;
+    transform_ = [&](geometry_precition_t x, geometry_precition_t y) {
+      int x_image = static_cast<int>((x - x_min_) * x_scale_);
+      int y_image = static_cast<int>(image_.h - (y - y_min_) * y_scale_);
+      return CVPoint(x_image, y_image);
+    };
+    delta_xtick_ = -5;
+    delta_ytick_ = 5;
+    x_label_sign_ = 1;
+    y_label_sign_ = -1;
+    break;
+  }
+  case PLOT_TYPE::IMAGE: {
+    // x -> right, y -> down
+    x_scale_ = image_.w / x_range_;
+    y_scale_ = image_.h / y_range_;
+    transform_ = [&](geometry_precition_t x, geometry_precition_t y) {
+      int x_image = static_cast<int>((x - x_min_) * x_scale_);
+      int y_image = static_cast<int>((y - y_min_) * y_scale_);
+      return CVPoint(x_image, y_image);
+    };
+    delta_xtick_ = -5;
+    delta_ytick_ = 5;
+    x_label_sign_ = 1;
+    y_label_sign_ = 1;
+    break;
+  }
+  case PLOT_TYPE::VEHICLE: {
+    // x -> up, y -> left
+    x_scale_ = image_.h / y_range_;
+    y_scale_ = image_.w / x_range_;
+    transform_ = [&](geometry_precition_t x, geometry_precition_t y) {
+      int x_image = static_cast<int>(image_.h - (y - y_min_) * x_scale_);
+      int y_image = static_cast<int>((x - x_min_) * y_scale_);
+      return CVPoint(y_image, x_image);
+    };
+    delta_xtick_ = -5;
+    delta_ytick_ = -5;
+    x_label_sign_ = -1;
+    y_label_sign_ = -1;
+    break;
+  }
+  default: {
+    LOG_ERROR << "Unknown plot type: " << static_cast<int>(plot_type_);
+    return;
+  }
+  }
+  transform_valid_ = true;
+}
 
-//     DrawAxes();
-//     DrawLegend();
-// }
+void Plot2D::DrawHistory() {
+  if (not transform_valid_) {
+    LOG_ERROR << "Failed to generate transform";
+    return;
+  }
+  if (history_data_.empty()) {
+    return;
+  }
+  for (size_t i = 0; i < history_data_.size(); ++i) {
+    const auto &data = history_data_[i];
+    const auto &label = std::get<0>(legend_[i]);
+    const auto &color = std::get<1>(legend_[i]);
+    const auto &draw_type = std::get<2>(legend_[i]);
+    const auto &thickness = std::get<3>(legend_[i]);
+    const auto &alpha = 1.0f;
+    std::vector<CVPoint> points;
+    points.reserve(data.rows());
+    for (size_t j = 0; j < data.rows(); ++j) {
+      points.push_back(transform_(data(j, 0), data(j, 1)));
+    }
+    DrawPoints(image_, points, color, thickness, alpha, draw_type);
+  }
+}
 
-// void Plot2D::Scatter(const std::vector<double>& x, const std::vector<double>&
-// y,
-//                      const CVColor& color, const std::string& label) {
-//     if (x.empty() || y.empty() || x.size() != y.size()) return;
+void Plot2D::DrawAxes() {
+  if (not transform_valid_) {
+    LOG_ERROR << "Failed to generate transform";
+    return;
+  }
+  // x axis
+  geometry_precition_t start_x = x_min_;
+  geometry_precition_t start_y = 0;
+  geometry_precition_t end_x = x_max_;
+  geometry_precition_t end_y = 0;
+  CVPoint start = transform_(start_x, start_y);
+  CVPoint end = transform_(end_x, end_y);
+  DrawArrow(image_, start, end, CVColor::BLACK, 1, 1.0f);
+  geometry_precition_t x_step = std::pow(10, std::floor(std::log10(x_range_)));
+  constexpr size_t kMinTicks = 5;
+  size_t x_ticks = static_cast<size_t>(x_range_ / x_step);
+  while (x_ticks < kMinTicks) {
+    x_step /= 2;
+    x_ticks = static_cast<size_t>(x_range_ / x_step);
+  }
+  for (geometry_precition_t x = 0; x >= x_min_; x -= x_step) {
+    geometry_precition_t y = 0;
+    start = transform_(x, y);
+    end.x = start.x;
+    end.y = start.y + delta_xtick_;
+    DrawLine(image_, start, end, CVColor::BLACK, 1, 1.0f);
+    DrawText(image_, ConvertToScientific(x), end, CVColor::BLACK, kFontSize,
+             1.0f);
+  }
+  for (geometry_precition_t x = x_step; x <= x_max_; x += x_step) {
+    geometry_precition_t y = 0;
+    start = transform_(x, y);
+    end.x = start.x;
+    end.y = start.y + delta_xtick_;
+    DrawLine(image_, start, end, CVColor::BLACK, 1, 1.0f);
+    std::ostringstream oss;
+    oss << std::scientific << std::setprecision(2) << x;
+    DrawText(image_, ConvertToScientific(x), end, CVColor::BLACK, kFontSize,
+             1.0f);
+  }
+  // y axis
+  start_x = 0;
+  start_y = y_min_;
+  end_x = 0;
+  end_y = y_max_;
+  DrawArrow(image_, transform_(start_x, start_y), transform_(end_x, end_y),
+            CVColor::BLACK, 1, 1.0f);
+  geometry_precition_t y_step = std::pow(10, std::floor(std::log10(y_range_)));
+  size_t y_ticks = static_cast<size_t>(y_range_ / y_step);
+  while (y_ticks < kMinTicks) {
+    y_step /= 2;
+    y_ticks = static_cast<size_t>(y_range_ / y_step);
+  }
+  for (geometry_precition_t y = -y_step; y >= y_min_; y -= y_step) {
+    geometry_precition_t x = 0;
+    start = transform_(x, y);
+    end.x = start.x + delta_ytick_;
+    end.y = start.y;
+    DrawLine(image_, start, end, CVColor::BLACK, 1, 1.0f);
+    DrawText(image_, ConvertToScientific(y), end, CVColor::BLACK, kFontSize,
+             1.0f);
+  }
+  for (geometry_precition_t y = y_step; y <= y_max_; y += y_step) {
+    geometry_precition_t x = 0;
+    start = transform_(x, y);
+    end.x = start.x + delta_ytick_;
+    end.y = start.y;
+    DrawLine(image_, start, end, CVColor::BLACK, 1, 1.0f);
+    DrawText(image_, ConvertToScientific(y), end, CVColor::BLACK, kFontSize,
+             1.0f);
+  }
+}
 
-//     AutoScale(x, y);
-//     if (!label.empty()) {
-//         legend_.emplace_back(label, color);
-//     }
+void Plot2D::DrawLegend() {
+  if (not transform_valid_) {
+    LOG_ERROR << "Failed to generate transform";
+    return;
+  }
+  const int start_x = 20;
+  const int start_y = 20;
+  const int delta_y = kFontSize * 8 * 2;
+  for (size_t i = 0; i < legend_.size(); ++i) {
+    const auto &legend = legend_[i];
+    const auto &label = std::get<0>(legend);
+    const auto &color = std::get<1>(legend);
+    const auto &draw_type = std::get<2>(legend);
+    const auto &thickness = std::get<3>(legend);
+    CVPoint start(start_x, start_y + i * delta_y);
+    CVPoint end(start_x + 20, start_y + i * delta_y);
+    DrawPoints(image_, {start, end}, color, thickness, 1.0f, draw_type);
+    DrawText(image_, label, CVPoint(end.x + 5, end.y - kFontSize * 4), color,
+             kFontSize, 1.0f);
+  }
+}
 
-//     // 转换坐标
-//     auto toPixelX = [this](double x) {
-//         return static_cast<int>((x - x_min_) / (x_max_ - x_min_) *
-//                               (image_.Width() - 2 * margin_) + margin_);
-//     };
+void Plot2D::DrawLabelAndTitle() {
+  if (not transform_valid_) {
+    LOG_ERROR << "Failed to generate transform";
+    return;
+  }
+  if (not title_.empty()) {
+    size_t text_size = kFontSize * 8 * title_.size();
+    DrawText(image_, title_,
+             CVPoint(image_.w / 2 - text_size / 2, kFontSize * 8),
+             CVColor::GREEN, kFontSize, 1.0f);
+  }
+  if (not x_label_.empty()) {
+    size_t text_size = kFontSize * 8 * x_label_.size();
+    CVPoint point = transform_(x_max_, 0);
+    point.x -= text_size * x_label_sign_;
+    DrawText(image_, x_label_, point, CVColor::BLACK, kFontSize, 1.0f);
+  }
+  if (not y_label_.empty()) {
+    CVPoint point = transform_(0, y_max_);
+    point.y -= kFontSize * 8 * y_label_sign_;
+    DrawText(image_, y_label_, point, CVColor::BLACK, kFontSize, 1.0f);
+  }
+}
 
-//     auto toPixelY = [this](double y) {
-//         return static_cast<int>((y_max_ - y) / (y_max_ - y_min_) *
-//                               (image_.Height() - 2 * margin_) + margin_);
-//     };
-
-//     // 绘制散点
-//     const int point_radius = 3;
-//     for (size_t i = 0; i < x.size(); ++i) {
-//         int px = toPixelX(x[i]);
-//         int py = toPixelY(y[i]);
-//         DrawCircle(image_, {px, py}, point_radius, color);
-//     }
-
-//     DrawAxes();
-//     DrawLegend();
-// }
-
-// void Plot2D::SetTitle(const std::string& title) {
-//     title_ = title;
-// }
-
-// void Plot2D::SetXLabel(const std::string& label) {
-//     x_label_ = label;
-// }
-
-// void Plot2D::SetYLabel(const std::string& label) {
-//     y_label_ = label;
-// }
-
-// void Plot2D::Show() {
-//     image_.Show();
-// }
-
-// void Plot2D::Save(const std::string& filename) {
-//     image_.Save(filename);
-// }
-
-// void Plot2D::DrawAxes() {
-//     // 绘制坐标轴
-//     int width = image_.Width();
-//     int height = image_.Height();
-
-//     // X轴
-//     DrawLine(image_, {margin_, height - margin_}, {width - margin_, height -
-//     margin_}, CVColor_BLACK);
-//     // Y轴
-//     DrawLine(image_, {margin_, margin_}, {margin_, height - margin_},
-//     CVColor_BLACK);
-// }
-
-// void Plot2D::DrawLegend() {
-//     // TODO: 实现图例绘制
-// }
-
-// void Plot2D::AutoScale(const std::vector<double>& x, const
-// std::vector<double>& y) {
-//     auto [x_min, x_max] = std::minmax_element(x.begin(), x.end());
-//     auto [y_min, y_max] = std::minmax_element(y.begin(), y.end());
-
-//     // 添加10%的边距
-//     double x_range = *x_max - *x_min;
-//     double y_range = *y_max - *y_min;
-
-//     x_min_ = *x_min - 0.1 * x_range;
-//     x_max_ = *x_max + 0.1 * x_range;
-//     y_min_ = *y_min - 0.1 * y_range;
-//     y_max_ = *y_max + 0.1 * y_range;
-// }
-
-// }  // namespace gcode
+std::string Plot2D::ConvertToScientific(const geometry_precition_t &value) {
+  // std::ostringstream oss;
+  // oss << std::scientific << std::setprecision(kPrecision) << value;
+  // return oss.str();
+  return std::to_string(int(value));
+}
+} // namespace gcode

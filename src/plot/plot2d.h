@@ -1,58 +1,76 @@
-// #ifndef SRC_PLOT_PLOT2D_H_
-// #define SRC_PLOT_PLOT2D_H_
-// #include "base/base_defines.h"
-// #include "cv/gimage.h"
-// #include <vector>
-// #include <string>
+// @author: gezhipeng @ 20250118
+// @file: plot2d.h
+// @brief: plot2d
+#ifndef SRC_PLOT_PLOT2D_H_
+#define SRC_PLOT_PLOT2D_H_
+#include "base/base_defines.h"
+#include "cv/gimage.h"
+#include <string>
+#include <tuple>
+#include <vector>
 
-// namespace gcode {
-// enum class PLOT_TYPE {
-//     IMAGE = 0,
-//     DATA = 1,
-//     VEHICLE = 2,
-// };
-// class Plot2D {
-// public:
-//     Plot2D(int width = 800, int height = 600, const std::string& title = "",
-//     const PLOT_TYPE& type = PLOT_TYPE::DATA); void Plot(const vector_t& ys,
-//     const CVColor& color = CVColor_BLUE, const PointsDrawType&
-//     marker=PointsDrawType::SOLID, const std::string& label = ""); void
-//     Plot(const vector_t& xs, const vector_t& ys, const CVColor& color =
-//     CVColor_BLUE, const PointsDrawType& marker=PointsDrawType::SOLID, const
-//     std::string& label = "");
+namespace gcode {
+enum class PLOT_TYPE {
+  IMAGE = 0,
+  DATA = 1,
+  VEHICLE = 2,
+};
+class Plot2D {
+public:
+  Plot2D(const size_t &width = 800, const size_t &height = 600,
+         const std::string &title = "",
+         const PLOT_TYPE &type = PLOT_TYPE::DATA);
+  void Plot(const vector_t &ys, const CVColor &color = CVColor_BLUE,
+            const PointsDrawType &draw_type = PointsDrawType::SOLID,
+            const int &thickness = 1, const std::string &label = "");
+  void Plot(const vector_t &xs, const vector_t &ys,
+            const CVColor &color = CVColor_BLUE,
+            const PointsDrawType &draw_type = PointsDrawType::SOLID,
+            const int &thickness = 1, const std::string &label = "");
 
-//     // 设置标题
-//     void SetTitle(const std::string& title);
+  void SetTitle(const std::string &title);
 
-//     // 设置x轴标签
-//     void SetXLabel(const std::string& label);
+  void SetXLabel(const std::string &label);
 
-//     // 设置y轴标签
-//     void SetYLabel(const std::string& label);
+  void SetYLabel(const std::string &label);
 
-//     // 显示图像
-//     void Show();
+  void Save(const std::string &filename);
 
-//     // 保存图像
-//     void Save(const std::string& filename);
+private:
+  void GenTransform();
+  void DrawHistory();
+  void DrawAxes();
+  void DrawLegend();
+  void DrawLabelAndTitle();
+  std::string ConvertToScientific(const geometry_precition_t &value);
 
-// private:
-//     void DrawAxes();
-//     void DrawLegend();
-//     void AutoScale(const std::vector<double>& x, const std::vector<double>&
-//     y);
+  Mat image_;
+  std::string title_;
+  std::string x_label_;
+  std::string y_label_;
+  std::vector<std::tuple<std::string, CVColor, PointsDrawType, int>>
+      legend_; // label, color, draw_type, thickness
+  PLOT_TYPE plot_type_ = PLOT_TYPE::DATA;
+  std::vector<points_2d_t> history_data_;
+  geometry_precition_t x_relative_margin_ = 0.1f;
+  geometry_precition_t y_relative_margin_ = 0.1f;
+  geometry_precition_t x_min_ = 0.f;
+  geometry_precition_t x_max_ = 0.f;
+  geometry_precition_t y_min_ = 0.f;
+  geometry_precition_t y_max_ = 0.f;
+  geometry_precition_t x_range_ = 0.f;
+  geometry_precition_t y_range_ = 0.f;
+  geometry_precition_t x_scale_ = 1.f;
+  geometry_precition_t y_scale_ = 1.f;
 
-//     Mat image_;
-//     std::string title_;
-//     std::string x_label_;
-//     std::string y_label_;
-//     std::vector<std::pair<std::string, CVColor>> legend_;
+  int delta_xtick_ = 0;
+  int delta_ytick_ = 0;
+  int x_label_sign_ = 1;
+  int y_label_sign_ = 1;
+  std::function<CVPoint(geometry_precition_t, geometry_precition_t)> transform_;
+  bool transform_valid_ = false;
+};
 
-//     double x_min_, x_max_;
-//     double y_min_, y_max_;
-//     int margin_ = 50;
-// };
+} // namespace gcode
 
-// }  // namespace gcode
-
-// #endif  // SRC_PLOT_PLOT2D_H_
+#endif // SRC_PLOT_PLOT2D_H_

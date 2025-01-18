@@ -29,30 +29,8 @@ TEST(GIMAGE, ReadImage_WRITE) {
 
 TEST(COLOR, COLOR_ENUM) {
   gcode::CVColor color = gcode::CVColor::WHITE;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::BLACK;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::RED;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::GREEN;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::BLUE;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::YELLOW;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::CYAN;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::PURPLE;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::ORANGE;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::GRAY;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::DARK_GRAY;
-  std::cout << color << std::endl;
-  color = gcode::CVColor::LIGHT_GRAY;
-  std::cout << color << std::endl;
-  for (auto &color : gcode::CVColor::COLORS) {
-    std::cout << color << std::endl;
+  LOG_DEBUG << color;
+  for (size_t i = 0; i < gcode::CVColor::COLORS.size(); i++) {
+    LOG_WARNING << "index " << i << " " << gcode::CVColor::COLORS[i];
   }
 }

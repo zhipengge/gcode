@@ -11,8 +11,14 @@
 #define ReadImage_GRAY 1
 namespace gcode {
 struct CVPoint {
-  int x;
-  int y;
+  CVPoint() : x(0), y(0) {}
+  CVPoint(const int &_x, const int &_y) : x(_x), y(_y) {}
+  friend std::ostream &operator<<(std::ostream &os, const CVPoint &point) {
+    os << "CVPoint(" << point.x << ", " << point.y << ")";
+    return os;
+  }
+  int x = 0;
+  int y = 0;
 };
 
 enum class PointsDrawType { NORMAL_DOT = 0, DASH = 1, SOLID = 2 };
