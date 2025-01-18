@@ -20,7 +20,7 @@ void Logger::AddPrefix(const char *file, const char *func, const int &line) {
   char time_str[64];
   strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", &tm);
   buffer_ << kLogLevelColorMap.at(level_) << time_str << " ["
-          << kLogLevelStringMap.at(level_) << "] " << file << " " << func << " "
-          << line << ": ";
+          << kLogLevelStringMap.at(level_) << "] " << file << ":" << line << " "
+          << func << ": ";
 } // namespace common
 } // namespace gcode

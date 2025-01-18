@@ -1,6 +1,7 @@
 // @author: gezhipeng @ 20231002
 // @file: gimage_test.cc
 // @brief: gimage_test
+#include "color.h"
 #include "gimage.h"
 #include "gtime.h"
 #include <gtest/gtest.h>
@@ -24,4 +25,12 @@ TEST(GIMAGE, ReadImage_WRITE) {
   gcode::DrawText(m1, "12345 gjpqymw", {100, 100}, gcode::CVColor_BLUE, 4, 1.f);
   std::string output = "lena.jpg";
   gcode::WriteImage(output, m1);
+}
+
+TEST(COLOR, COLOR_ENUM) {
+  gcode::CVColor color = gcode::CVColor::WHITE;
+  LOG_DEBUG << color;
+  for (size_t i = 0; i < gcode::CVColor::COLORS.size(); i++) {
+    LOG_WARNING << "index " << i << " " << gcode::CVColor::COLORS[i];
+  }
 }
