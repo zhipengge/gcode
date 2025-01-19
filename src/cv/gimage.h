@@ -10,6 +10,13 @@
 #define ReadImage_RGB 3
 #define ReadImage_GRAY 1
 namespace gcode {
+struct CVSize {
+  CVSize() = default;
+  CVSize(const int &_width, const int &_height)
+      : width(_width), height(_height) {}
+  int width = 0;
+  int height = 0;
+};
 struct CVPoint {
   CVPoint() : x(0), y(0) {}
   CVPoint(const int &_x, const int &_y) : x(_x), y(_y) {}
@@ -17,6 +24,19 @@ struct CVPoint {
     os << "CVPoint(" << point.x << ", " << point.y << ")";
     return os;
   }
+  CVPoint operator+(const CVPoint &other) {
+    return CVPoint(this->x + other.x, this->y + other.y);
+  }
+  CVPoint operator-(const CVPoint &other) {
+    return CVPoint(this->x - other.x, this->y - other.y);
+  }
+  CVPoint operator*(const float &scale) {
+    return CVPoint(int(this->x * scale), int(this->y * scale));
+  }
+  CVPoint operator*(const CVSize &size) {
+    return CVPoint(this->x * size.width, this->y * size.height);
+  }
+
   int x = 0;
   int y = 0;
 };
@@ -60,5 +80,6 @@ void Resize(const Mat &src, Mat &dst, const size_t &w, const size_t &h);
 void DrawText(Mat &m, const std::string &text, const CVPoint &p,
               const CVColor &color, const int &font_size = 1,
               const float &alpha = 1.0f);
+CVSize GetTextSize(const std::string &str, const int &font_size);
 } // namespace gcode
 #endif // SRC_CV_GIMAGE_H_
