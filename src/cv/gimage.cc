@@ -363,4 +363,13 @@ void DrawText(Mat &m, const std::string &text, const CVPoint &p,
     start_x += pix_size;
   }
 }
+CVSize GetTextSize(const std::string &str, const int &font_size) {
+  CVSize size(0, 0);
+  if (str.empty() or font_size < MIN_FONT_SIZE_VALUE or
+      font_size > MAX_FONT_SIZE_VALUE) {
+    return size;
+  }
+  size = CVSize(str.size() * font_size * 8, font_size * 8);
+  return size;
+}
 } // namespace gcode

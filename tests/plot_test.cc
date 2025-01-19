@@ -6,20 +6,20 @@
 #include <cmath>
 
 TEST(PLOT, PLOT2D) {
-    gcode::Plot2D plot(500, 500, "test", gcode::PLOT_TYPE::DATA);
+    gcode::Plot2D plot(500, 500, "test", gcode::PLOT_TYPE::VEHICLE);
     plot.SetXLabel("x");
     plot.SetYLabel("y");
-    vector_t xs(100);
-    vector_t ys(100);
-    for (int i = 0; i < xs.size(); ++i) {
-        xs[i] = i - 50;
-        ys[i] = xs[i] * xs[i];
+    size_t num_points = 100;
+    float step = 250 / num_points;
+    vector_t xs(num_points);
+    vector_t ys1(num_points);
+    vector_t ys2(num_points);
+    for (size_t i = 0; i < num_points; ++i) {
+        xs[i] = i * step - 25.f;
+        ys1[i] = std::sin(xs[i] / 10.f) * 50;
+        ys2[i] = std::cos(xs[i] / 10.f) * 50;
     }
-    plot.Plot(xs, ys, gcode::CVColor::BLUE, gcode::PointsDrawType::SOLID, 2, "y=x^2");
-    vector_t ys2(100);
-    for (int i = 0; i < xs.size(); ++i) {
-        ys2[i] = std::sin(xs[i] / 10.0f) * 500;
-    }
-    plot.Plot(xs, ys2, gcode::CVColor::RED, gcode::PointsDrawType::DASH, 2, "y=sin(x/10)*500");
+    plot.Plot(xs, ys1, gcode::CVColor::BLUE, gcode::PointsDrawType::DASH, 2, "y=50*sin(x/10)");
+    plot.Plot(xs, ys2, gcode::CVColor::RED, gcode::PointsDrawType::SOLID, 2, "y=50*sin(x/10)");
     plot.Save("plot2d.jpg");
 }

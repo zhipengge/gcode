@@ -63,8 +63,8 @@ private:
   geometry_precition_t x_scale_ = 1.f;
   geometry_precition_t y_scale_ = 1.f;
 
-  int delta_xtick_ = 0;
-  int delta_ytick_ = 0;
+  CVPoint x_tick_offset_{0, 0};
+  CVPoint y_tick_offset_{0, 0};
   int x_label_sign_ = 1;
   int y_label_sign_ = 1;
   std::function<CVPoint(geometry_precition_t, geometry_precition_t)> transform_;
