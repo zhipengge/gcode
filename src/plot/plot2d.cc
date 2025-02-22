@@ -1,9 +1,11 @@
 #include "plot/plot2d.h"
-#include "glog.h"
+
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+
+#include "glog.h"
 namespace gcode {
 constexpr size_t kPrecision = 0;
 constexpr int kFontSize = 2;

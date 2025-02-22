@@ -3,10 +3,11 @@
 // @brief: gimage
 #ifndef SRC_CV_GIMAGE_H_
 #define SRC_CV_GIMAGE_H_
-#include "color.h"
-#include "gmat.h"
 #include <cmath>
 #include <vector>
+
+#include "color.h"
+#include "gmat.h"
 #define ReadImage_RGB 3
 #define ReadImage_GRAY 1
 namespace gcode {

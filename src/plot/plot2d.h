@@ -3,11 +3,12 @@
 // @brief: plot2d
 #ifndef SRC_PLOT_PLOT2D_H_
 #define SRC_PLOT_PLOT2D_H_
-#include "base/base_defines.h"
-#include "cv/gimage.h"
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include "base/base_defines.h"
+#include "cv/gimage.h"
 
 namespace gcode {
 enum class PLOT_TYPE {

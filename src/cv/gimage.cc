@@ -2,13 +2,15 @@
 // @file: gimage.cc
 // @brief: gimage
 #include "gimage.h"
+
+#include <cmath>
+#include <filesystem>
+#include <iostream>
+
 #include "ascii_image.h"
 #include "glog.h"
 #include "stb_image.h"
 #include "stb_image_write.h"
-#include <cmath>
-#include <filesystem>
-#include <iostream>
 
 namespace gcode {
 Mat ReadImage(const std::string &filename, const int &mode) {

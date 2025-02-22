@@ -1,11 +1,12 @@
 // @author: gezhipeng @ 20231002
 // @file: layer.h
 // @brief: layer
+#include <vector>
+
 #include "gmat.h"
 #include "model.h"
 #include "options.h"
 #include "param.h"
-#include <vector>
 namespace gcode {
 class Layer {
 public:

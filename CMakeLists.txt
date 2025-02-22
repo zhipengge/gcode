@@ -9,6 +9,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/cv
   ${CMAKE_CURRENT_SOURCE_DIR}/src/nn
   ${CMAKE_CURRENT_SOURCE_DIR}/src/plot
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithm
 )
 
 

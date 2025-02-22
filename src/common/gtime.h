@@ -4,9 +4,10 @@
 
 #ifndef SRC_COMMON_GTIME_H_
 #define SRC_COMMON_GTIME_H_
-#include "glog.h"
 #include <iostream>
 #include <string>
+
+#include "glog.h"
 // Timer for different block
 #define TIMER_BLOCK_START(identifier)                                          \
   auto start_##identifier = std::chrono::high_resolution_clock::now();         \

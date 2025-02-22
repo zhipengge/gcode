@@ -2,6 +2,7 @@
 // @file: log.cc
 // @brief: log
 #include "glog.h"
+
 #include <ctime>
 namespace gcode {
 Logger::Logger(const LogLevel &level, const char *file, const char *func,

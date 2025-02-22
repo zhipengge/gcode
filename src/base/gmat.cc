@@ -2,8 +2,10 @@
 // @file: gmat.cc
 // @brief: gmat
 #include "gmat.h"
-#include "macro.h"
+
 #include <cstring>
+
+#include "macro.h"
 namespace gcode {
 Mat::Mat() { release(); }
 

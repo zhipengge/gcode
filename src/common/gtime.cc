@@ -2,6 +2,7 @@
 // @file: gtime.cc
 // @brief: gtime
 #include "gtime.h"
+
 #include <chrono>
 namespace gcode {
 Timestamp GetCurrentTimestamp() {
