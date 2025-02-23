@@ -7,17 +7,19 @@
 #include "macro.h"
 #include "singleton.h"
 #include <Eigen/Core>
-#include <Eigen/Dense>
 #include <iostream>
+#include <Eigen/Dense>
 
 using namespace std;
 using namespace gcode;
 
 int main() {
-  Eigen::Matrix<int, 2, 2, Eigen::ColMajor> m;
-  m << 1, 2, 3, 4;
-  cout << m << endl;
-  cout << m.row(0) << endl;
-  cout << m.row(1) << endl;
+  LOG_DEBUG << "hello world";
+#ifdef ENABLE_X86_SSE
+  std::cout << "ENABLE_X86_SSE" << std::endl;
+#endif
+#ifdef ENABLE_ARM_NEON
+  std::cout << "ENABLE_ARM_NEON" << std::endl;
+#endif
   return 0;
 }
