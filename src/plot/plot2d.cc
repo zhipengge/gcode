@@ -10,8 +10,8 @@ namespace gcode {
 constexpr size_t kPrecision = 0;
 constexpr int kFontSize = 2;
 constexpr int kTickSize = 5;
-constexpr geometry_precition_t kVehicleLeft = -50.f;
-constexpr geometry_precition_t kVehicleRight = 50.f;
+constexpr geometry_precition_t kVehicleLeft = -80.f;
+constexpr geometry_precition_t kVehicleRight = 80.f;
 constexpr geometry_precition_t kVehicleBottom = -50.f;
 constexpr geometry_precition_t kVehicleTop = 200.f;
 Plot2D::Plot2D(const size_t &width, const size_t &height,
@@ -19,6 +19,30 @@ Plot2D::Plot2D(const size_t &width, const size_t &height,
     : image_(width, height, 3, sizeof(uint8_t)), title_(title),
       plot_type_(type) {
   image_.fill<uint8_t>(255);
+}
+
+void Plot2D::Reset() {
+  history_data_.clear();
+  legend_.clear();
+  title_ = "";
+  x_label_ = "";
+  y_label_ = "";
+  x_relative_margin_ = 0.1f;
+  y_relative_margin_ = 0.1f;
+  x_min_ = 0.f;
+  x_max_ = 0.f;
+  y_min_ = 0.f;
+  y_max_ = 0.f;
+  x_range_ = 0.f;
+  y_range_ = 0.f;
+  x_scale_ = 1.f;
+  y_scale_ = 1.f;
+
+  transform_valid_ = false;
+  x_tick_offset_ = CVPoint(0, 0);
+  y_tick_offset_ = CVPoint(0, 0);
+  x_label_sign_ = 1;
+  y_label_sign_ = 1;
 }
 
 void Plot2D::Plot(const vector_t &ys, const CVColor &color,
@@ -276,17 +300,22 @@ void Plot2D::DrawLegend() {
   const int start_x = 20;
   const int start_y = 20;
   const int delta_y = kFontSize * 8 * 2;
+  int index = 0;
   for (size_t i = 0; i < legend_.size(); ++i) {
     const auto &legend = legend_[i];
     const auto &label = std::get<0>(legend);
+    if (label.empty()) {
+      continue;
+    }
     const auto &color = std::get<1>(legend);
     const auto &draw_type = std::get<2>(legend);
     const auto &thickness = std::get<3>(legend);
-    CVPoint start(start_x, start_y + i * delta_y);
-    CVPoint end(start_x + 20, start_y + i * delta_y);
+    CVPoint start(start_x, start_y + index * delta_y);
+    CVPoint end(start_x + 20, start_y + index * delta_y);
     DrawPoints(image_, {start, end}, color, thickness, 1.0f, draw_type);
     DrawText(image_, label, CVPoint(end.x + 5, end.y - kFontSize * 4), color,
              kFontSize, 1.0f);
+    index++;
   }
 }
 

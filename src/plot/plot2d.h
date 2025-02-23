@@ -21,6 +21,7 @@ public:
   Plot2D(const size_t &width = 800, const size_t &height = 600,
          const std::string &title = "",
          const PLOT_TYPE &type = PLOT_TYPE::DATA);
+  void Reset();
   void Plot(const vector_t &ys, const CVColor &color = CVColor_BLUE,
             const PointsDrawType &draw_type = PointsDrawType::SOLID,
             const int &thickness = 1, const std::string &label = "");

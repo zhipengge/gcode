@@ -23,7 +23,9 @@ void GaussNewtonOptimizer::Optimize() {
     params_flat -= delta;
 
     // 计算当前 loss
-    double loss = residual_flat.squaredNorm();
+    float loss = residual_flat.squaredNorm();
+    std::cout << "inter " << iter << "/" << max_iterations_ << ":" << loss
+              << std::endl;
 
     // 判断是否收敛
     if (loss < loss_threshold_) {
