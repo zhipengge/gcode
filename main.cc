@@ -7,8 +7,8 @@
 #include "macro.h"
 #include "singleton.h"
 #include <Eigen/Core>
-#include <iostream>
 #include <Eigen/Dense>
+#include <iostream>
 
 using namespace std;
 using namespace gcode;

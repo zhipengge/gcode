@@ -15,13 +15,13 @@ typedef Eigen::Vector3d vector3d_t;
 typedef Eigen::Vector2f vector2f_t;
 typedef Eigen::Vector3f vector3f_t;
 
-template <typename T> using vector2_t = Eigen::Matrix<T, 2, 1, Eigen::ColMajor>;
-template <typename T> using vector3_t = Eigen::Matrix<T, 3, 1, Eigen::ColMajor>;
-
 typedef Eigen::Matrix<double, Eigen::Dynamic, 2, Eigen::ColMajor> points_2d_t;
 typedef Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::ColMajor> points_3d_t;
 typedef Eigen::Matrix<float, Eigen::Dynamic, 2, Eigen::ColMajor> points_2f_t;
 typedef Eigen::Matrix<float, Eigen::Dynamic, 3, Eigen::ColMajor> points_3f_t;
+
+template <typename T> using vector2_t = Eigen::Matrix<T, 2, 1, Eigen::ColMajor>;
+template <typename T> using vector3_t = Eigen::Matrix<T, 3, 1, Eigen::ColMajor>;
 
 template <typename T>
 T DistanceToSegment(const vector2_t<T> &p, const vector2_t<T> &a,
